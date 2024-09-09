@@ -1,0 +1,102 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: wp_db
+    restart: unless-stopped
+    networks:
+      mohaji_network:
+    command: [
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_unicode_ci',
+      '--innodb_buffer_pool_size=2G',
+      '--innodb_log_file_size=1G',
+      '--innodb_flush_log_at_trx_commit=2',
+      '--max_heap_table_size=256M',
+      '--tmp_table_size=256M',
+      '--max_connections=200',
+      '--key_buffer_size=16M'
+    ]
+    ports:
+      - '3306:3306'
+    volumes:
+      - ../blog/wp-data:/docker-entrypoint-initdb.d
+      - app_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MYSQL_USER: "${DB_USER_NAME}"
+      MYSQL_PASSWORD: "${DB_USER_PASSWORD}"
+
+  wp:
+    container_name: wp_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      mohaji_network:
+    volumes:
+      - ../config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ../blog/wp-app:/var/www/html/blog/
+      - ../config/wp-config.php:/var/www/html/wp-config.php
+    environment:
+      WORDPRESS_DB_HOST: "${DB_HOST}"
+      WORDPRESS_DB_NAME: "${DB_NAME}"
+      WORDPRESS_DB_USER: "${DB_USER_NAME}"
+      WORDPRESS_DB_PASSWORD: "${DB_USER_PASSWORD}"
+      WORDPRESS_DEBUG: 1
+      WP_HOME: "${WP_HOME}"
+      WP_SITEURL: "${WP_SITEURL}"
+      WP_CONTENT_URL: "${WP_CONTENT_URL}"
+      WP_PLUGIN_DIR: "${WP_PLUGIN_DIR}"
+    depends_on:
+      - db
+
+  nginx:
+    container_name: proxy
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ../nginx/conf.d:/etc/nginx/conf.d
+      - ../nginx/cert:/etc/nginx/cert
+      - ../nginx/log:/var/log/nginx
+    networks:
+      - mohaji_network
+
+#  snc_db:
+#    image: mariadb:latest
+#    container_name: stop_and_counter_db
+#    restart: unless-stopped
+#    networks:
+#      mohaji_network:
+#    command: [
+#      '--character-set-server=utf8mb4',
+#      '--collation-server=utf8mb4_unicode_ci',
+#      '--innodb_buffer_pool_size=1G',
+#      '--innodb_log_file_size=512MB',
+#      '--innodb_flush_log_at_trx_commit=2',
+#      '--max_heap_table_size=128M',
+#      '--tmp_table_size=128M',
+#      '--max_connections=100',
+#      '--key_buffer_size=8M'
+#    ]
+#    ports:
+#      - '3306:3306'
+#    volumes:
+#      - snc_data:/var/lib/mysql
+#    environment:
+#      MARIADB_DATABASE: "${DB_NAME}"
+#      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+#      MARIADB_USER: "${DB_USER_NAME}"
+#      MARIADB_PASSWORD: "${DB_USER_PASSWORD}"
+
+networks:
+  mohaji_network:
+
+volumes:
+  app_data:
+  snc_data:

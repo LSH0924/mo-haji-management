@@ -1,0 +1,56 @@
+# Wordpress - ignore core, configuration, examples, uploads and logs.
+# https://github.com/github/gitignore/blob/main/WordPress.gitignore
+
+blog/wp-data
+# Core
+#
+# Note: if you want to stage/commit WP core files
+# you can delete this whole section/until Configuration.
+blog/wp-app/wp-admin/
+blog/wp-app/wp-content/index.php
+blog/wp-app/wp-content/plugins/index.php
+blog/wp-app/wp-content/plugins/**/node_modules
+blog/wp-app/wp-content/themes/index.php
+blog/wp-app/wp-content/themes/**/node_modules/
+blog/wp-app/wp-content/themes/**/package-lock.json
+blog/wp-app/wp-content/themes/**/assets/public/
+blog/wp-app/wp-content/themes/**/css/style.css
+blog/wp-app/wp-content/themes/**/css/style.css.map
+blog/wp-app/wp-includes/
+blog/wp-app/index.php
+blog/wp-app/license.txt
+blog/wp-app/readme.html
+blog/wp-app/wp-*.php
+blog/wp-app/xmlrpc.php
+
+# Configuration
+#wp-app/wp-config.php
+
+# Example themes
+blog/wp-app/wp-content/themes/twenty*/
+
+# Example plugin
+blog/wp-app/wp-content/plugins/hello.php
+
+# Uploads
+blog/wp-app/wp-content/uploads/
+
+# Log files
+blog/wp-app/*.log
+
+# htaccess
+blog/wp-app/.htaccess
+
+# All plugins
+#
+# Note: If you wish to whitelist plugins,
+# uncomment the next line
+#/wp-content/plugins
+
+# All themes
+#
+# Note: If you wish to whitelist themes,
+# uncomment the next line
+#/wp-content/themes
+
+.idea
